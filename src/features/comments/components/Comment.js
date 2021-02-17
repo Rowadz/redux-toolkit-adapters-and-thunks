@@ -13,8 +13,8 @@ const Comment = ({ id, body, onDelete, onPatch, onUpdate }) => {
         <Button
           size="lg"
           color="cyan"
-          //   onClick={() => onPatch(id, { body: 'NEW TEXT' })}
-          onClick={() => onUpdate(id, { body: 'NEW TEXT' })}
+          onClick={() => onPatch(id, { body: 'NEW TEXT' })}
+          //   onClick={() => onUpdate(id, { body: 'NEW TEXT' })}
         >
           Patch
         </Button>
@@ -24,7 +24,7 @@ const Comment = ({ id, body, onDelete, onPatch, onUpdate }) => {
 }
 
 Comment.propTypes = {
-  id: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
   body: PropTypes.string.isRequired,
   onPatch: PropTypes.func.isRequired,
   onUpdate: PropTypes.func.isRequired,

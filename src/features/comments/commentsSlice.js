@@ -7,16 +7,20 @@ import {
 export const fetchComments = createAsyncThunk(
   'comments/fetchComments',
   async () => {
-    return await fetch(
-      'https://jsonplaceholder.typicode.com/comments?_limit=10'
-    ).then((res) => res.json())
+    const data = await fetch('http://localhost:3001/comments').then((res) =>
+      res.json()
+    )
+    const tags = data.reduce((prev, curr) => [...prev, curr.tags], []).flat()
+    const likes = data.reduce((prev, curr) => [...prev, curr.likes], []).flat()
+    const comments = data.map(({ id, body }) => ({ id, body }))
+    return { comments, likes, tags }
   }
 )
 
 export const deleteComment = createAsyncThunk(
   'comments/deleteComment',
   async (id) => {
-    await fetch(`https://jsonplaceholder.typicode.com/comments/${id}`, {
+    await fetch(`http://localhost:3001/comments/${id}`, {
       method: 'DELETE',
     })
     return id
@@ -26,7 +30,7 @@ export const deleteComment = createAsyncThunk(
 export const patchComment = createAsyncThunk(
   'comments/patchComment',
   async ({ id, newObj }) => {
-    await fetch(`https://jsonplaceholder.typicode.com/comments/${id}`, {
+    await fetch(`http://localhost:3001/comments/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(newObj),
     })
@@ -38,14 +42,32 @@ const commentsAdapter = createEntityAdapter({
   selectId: (comment) => comment.id,
 })
 
+const likesAdapter = createEntityAdapter({
+  selectId: (like) => like.id,
+})
+
+const tagsAdapter = createEntityAdapter({
+  selectId: (tag) => tag.id,
+})
+
 const commentsSlice = createSlice({
   name: 'comments',
-  initialState: commentsAdapter.getInitialState({ loading: false }),
+  initialState: commentsAdapter.getInitialState({
+    loading: false,
+    likes: likesAdapter.getInitialState(),
+    tags: tagsAdapter.getInitialState(),
+  }),
   reducers: {
     setAllComments: commentsAdapter.setAll,
     setOneComments: commentsAdapter.removeOne,
     setManyComments: commentsAdapter.addMany,
     updateOneComment: commentsAdapter.updateOne,
+    removeLikes(state) {
+      likesAdapter.removeAll(state.likes, {})
+    },
+    removeTagById(state, { payload: tagId }) {
+      tagsAdapter.removeOne(state.tags, tagId)
+    },
   },
   extraReducers: {
     [fetchComments.pending](state) {
@@ -53,7 +75,9 @@ const commentsSlice = createSlice({
     },
     [fetchComments.fulfilled](state, { payload }) {
       state.loading = false
-      commentsAdapter.setAll(state, payload)
+      commentsAdapter.setAll(state, payload.comments)
+      tagsAdapter.setAll(state.tags, payload.tags)
+      likesAdapter.setAll(state.likes, payload.likes)
     },
     [fetchComments.rejected](state) {
       state.loading = false
@@ -90,6 +114,8 @@ export const {
   setManyComments,
   setOneComments,
   updateOneComment,
+  removeLikes,
+  removeTagById,
 } = commentsSlice.actions
 
 export default commentsSlice.reducer

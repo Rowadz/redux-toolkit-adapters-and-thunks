@@ -6,8 +6,11 @@ import {
   deleteComment,
   patchComment,
   updateOneComment,
+  removeLikes,
+  removeTagById,
 } from './commentsSlice'
 import Comment from './components/Comment'
+import { Button } from 'rsuite'
 
 const Comments = () => {
   const dispatch = useDispatch()
@@ -25,16 +28,32 @@ const Comments = () => {
     dispatch(fetchComments())
   }, [])
 
-  return allComments.map(({ id, body }) => (
-    <Comment
-      key={id}
-      id={id}
-      body={body}
-      onPatch={onPatch}
-      onDelete={onDelete}
-      onUpdate={onUpdate}
-    />
-  ))
+  return (
+    <>
+      <Button color="yellow" size="lg" onClick={() => dispatch(removeLikes())}>
+        DELET ALL LIKES
+      </Button>
+      <Button
+        color="blue"
+        size="lg"
+        onClick={() =>
+          dispatch(removeTagById('a882d44c-0baf-4d26-844e-8f20a0aa8323'))
+        }
+      >
+        REMOVE TAGE BY ID
+      </Button>
+      {allComments.map(({ id, body }) => (
+        <Comment
+          key={id}
+          id={id}
+          body={body}
+          onPatch={onPatch}
+          onDelete={onDelete}
+          onUpdate={onUpdate}
+        />
+      ))}
+    </>
+  )
 }
 
 export default Comments
