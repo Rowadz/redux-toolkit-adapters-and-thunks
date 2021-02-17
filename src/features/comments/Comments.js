@@ -6,6 +6,7 @@ import {
   deleteComment,
   patchComment,
   updateOneComment,
+  likesSelectors,
   removeLikes,
   removeTagById,
 } from './commentsSlice'
@@ -15,6 +16,7 @@ import { Button } from 'rsuite'
 const Comments = () => {
   const dispatch = useDispatch()
   const allComments = useSelector(commentsSelectors.selectAll)
+  const allNestedLikes = useSelector(likesSelectors.selectAll)
   const onDelete = useCallback((id) => dispatch(deleteComment(id)), [])
   const onPatch = useCallback(
     (id, newObj) => dispatch(patchComment({ id, newObj })),
@@ -27,6 +29,8 @@ const Comments = () => {
   useEffect(() => {
     dispatch(fetchComments())
   }, [])
+
+  console.log({ allNestedLikes })
 
   return (
     <>

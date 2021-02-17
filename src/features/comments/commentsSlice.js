@@ -109,6 +109,10 @@ export const commentsSelectors = commentsAdapter.getSelectors(
   (state) => state.comments
 )
 
+export const likesSelectors = likesAdapter.getSelectors(
+  (state) => state.comments.likes
+)
+
 export const {
   setAllComments,
   setManyComments,
