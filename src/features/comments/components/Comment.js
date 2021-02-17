@@ -1,16 +1,21 @@
-import React from 'react'
+import React, { memo } from 'react'
 import PropTypes from 'prop-types'
 import { Panel, Button, ButtonToolbar } from 'rsuite'
 
-const Comment = ({ comment, onDelete }) => {
+const Comment = ({ id, body, onDelete, onPatch, onUpdate }) => {
   return (
-    <Panel header={<h1>{comment.id}</h1>} bordered style={{ margin: 20 }}>
-      {comment.body}
+    <Panel header={<h1>{id}</h1>} bordered style={{ margin: 20 }}>
+      {body}
       <ButtonToolbar style={{ marginTop: 10 }}>
-        <Button size="lg" color="red" onClick={() => onDelete(comment.id)}>
+        <Button size="lg" color="red" onClick={() => onDelete(id)}>
           Delete
         </Button>
-        <Button size="lg" color="cyan">
+        <Button
+          size="lg"
+          color="cyan"
+          //   onClick={() => onPatch(id, { body: 'NEW TEXT' })}
+          onClick={() => onUpdate(id, { body: 'NEW TEXT' })}
+        >
           Patch
         </Button>
       </ButtonToolbar>
@@ -19,8 +24,11 @@ const Comment = ({ comment, onDelete }) => {
 }
 
 Comment.propTypes = {
+  id: PropTypes.number.isRequired,
+  body: PropTypes.string.isRequired,
+  onPatch: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
-  comment: PropTypes.object.isRequired,
 }
 
-export default Comment
+export default memo(Comment)
