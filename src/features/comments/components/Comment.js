@@ -2,12 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Panel, Button, ButtonToolbar } from 'rsuite'
 
-const Comment = ({ comment }) => {
+const Comment = ({ comment, onDelete }) => {
   return (
-    <Panel header={comment.name} bordered style={{ margin: 20 }}>
+    <Panel header={<h1>{comment.id}</h1>} bordered style={{ margin: 20 }}>
       {comment.body}
       <ButtonToolbar style={{ marginTop: 10 }}>
-        <Button size="lg" color="red">
+        <Button size="lg" color="red" onClick={() => onDelete(comment.id)}>
           Delete
         </Button>
         <Button size="lg" color="cyan">
@@ -19,6 +19,7 @@ const Comment = ({ comment }) => {
 }
 
 Comment.propTypes = {
+  onDelete: PropTypes.func.isRequired,
   comment: PropTypes.object.isRequired,
 }
 
