@@ -12,7 +12,12 @@ export const fetchComments = createAsyncThunk(
     )
     const tags = data.reduce((prev, curr) => [...prev, curr.tags], []).flat()
     const likes = data.reduce((prev, curr) => [...prev, curr.likes], []).flat()
-    const comments = data.map(({ id, body }) => ({ id, body }))
+    const comments = data.map(({ id, body, likes, tags }) => ({
+      id,
+      body,
+      likesIds: likes.map((like) => like.id),
+      tagsIds: tags.map((tag) => tag.id),
+    }))
     return { comments, likes, tags }
   }
 )
