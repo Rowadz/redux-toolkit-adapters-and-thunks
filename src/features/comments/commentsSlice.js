@@ -10,9 +10,18 @@ export const fetchComments = createAsyncThunk(
     const data = await fetch('http://localhost:3001/comments').then((res) =>
       res.json()
     )
-    const tags = data.reduce((prev, curr) => [...prev, curr.tags], []).flat()
-    const likes = data.reduce((prev, curr) => [...prev, curr.likes], []).flat()
-    const comments = data.map(({ id, body, likes, tags }) => ({
+    const mappedData = data.map((comment) => ({
+      ...comment,
+      tags: comment.tags.map((tag) => ({ ...tag, commentId: comment.id })),
+      likes: comment.likes.map((like) => ({ ...like, commentId: comment.id })),
+    }))
+    const tags = mappedData
+      .reduce((prev, curr) => [...prev, curr.tags], [])
+      .flat()
+    const likes = mappedData
+      .reduce((prev, curr) => [...prev, curr.likes], [])
+      .flat()
+    const comments = mappedData.map(({ id, body, likes, tags }) => ({
       id,
       body,
       likesIds: likes.map((like) => like.id),
@@ -71,6 +80,19 @@ const commentsSlice = createSlice({
       likesAdapter.removeAll(state.likes, {})
     },
     removeTagById(state, { payload: tagId }) {
+      const { commentId } = tagsAdapter
+        .getSelectors()
+        .selectById(state.tags, tagId)
+      const comment = commentsAdapter
+        .getSelectors()
+        .selectById(state, commentId)
+      commentsAdapter.updateOne(state, {
+        id: comment.id,
+        changes: {
+          ...comment,
+          tagsIds: comment.tagsIds.filter((id) => id !== tagId),
+        },
+      })
       tagsAdapter.removeOne(state.tags, tagId)
     },
   },
